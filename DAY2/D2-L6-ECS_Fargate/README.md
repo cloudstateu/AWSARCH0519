@@ -71,6 +71,7 @@ Almost all of the configuration is ready, now you can run your task and test the
 * **Cluster VPC:** use your vpc
 * **Subnets:** select your Public subnets
 * **Security groups**: make sure that port 8080 is opened
+* Click **Auto Assign Public IP**
 
 19. Leave the rest and click **Run Task**
 20. Wait until the service will be in **RUNNING** state 
