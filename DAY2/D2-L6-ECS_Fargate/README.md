@@ -28,7 +28,7 @@ You should find there one repository called “mario”.
    * **Cluster name:** studentXcluster,
    * **Create VPC**: leave unselected.
 
-7. Click **Viec cluster**.
+7. Click **View cluster**.
 
 ## Task 2: Create a task definition
 
