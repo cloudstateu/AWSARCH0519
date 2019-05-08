@@ -17,7 +17,7 @@ In this task you will create an Amazon S3 bucket. Every object in Amazon S3 is s
 2. Click **+Create bucket** button. 
 3. Paste the name: **csa0419-studentX-2** 
 4. Select Region: **EU (Ireland)** 
-5. Click **Create**. 
+5. Click **Next**. 
 
 Selecting a particular region allows you to optimize latency, minimize costs, or address regulatory
 requirements. Objects stored in a region never leave that region unless you explicitly transfer them to
