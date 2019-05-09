@@ -1,0 +1,75 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: An AWS Serverless Specification template describing your function.
+Resources:
+  APIFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: APIFunction/lambda_function.lambda_handler
+      Runtime: python3.6
+      Description: ''
+      MemorySize: 128
+      Timeout: 15
+      CodeUri: .debug/
+      Events:
+        LambdaMicroservice:
+          Type: Api
+          Properties:
+            Path: /
+            Method: ANY
+      Environment:
+        Variables:
+          standard_queue_url: !Ref StandardQueue
+          priority_queue_url: !Ref PriorityQueue
+          priority_ip_address: '89.77.1.32'
+      Policies:
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt StandardQueue.QueueName
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt PriorityQueue.QueueName
+  APIFunctionPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName:
+        'Fn::GetAtt':
+          - APIFunction
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        'Fn::Sub': 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*/*/*/*'
+        
+  PriorityQueueFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: PriorityQueueFunction/lambda_function.lambda_handler
+      Runtime: python3.6
+      Events:
+        MySQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt PriorityQueue.Arn
+            BatchSize: 10
+  PriorityQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      VisibilityTimeout: 5
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt PriorityQueueDLQ.Arn
+        maxReceiveCount: 5
+  PriorityQueueDLQ:
+    Type: AWS::SQS::Queue
+    
+  StandardQueueFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: StandardQueueFunction/lambda_function.lambda_handler
+      Runtime: python3.6
+      Events:
+        MySQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt StandardQueue.Arn
+            BatchSize: 10
+  StandardQueue:
+    Type: AWS::SQS::Queue
